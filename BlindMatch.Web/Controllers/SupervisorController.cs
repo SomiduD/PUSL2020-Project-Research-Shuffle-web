@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BlindMatch.Web.Data;
+using BlindMatch.Web.Data; // Ensure this matches your folder name
+using BlindMatch.Web.Models;
 
 namespace BlindMatch.Web.Controllers
 {
@@ -13,31 +14,10 @@ namespace BlindMatch.Web.Controllers
             _context = context;
         }
 
-        // 1. Blind Review Dashboard: Browse proposals without student details
         public async Task<IActionResult> Index()
         {
-            // Only show proposals that are NOT yet matched
-            var availableProposals = await _context.ProjectProposals
-                .Where(p => p.SupervisorId == null)
-                .ToListAsync();
-            return View(availableProposals);
+            var proposals = await _context.ProjectProposals.ToListAsync();
+            return View(proposals);
         }
-
-        // 2. Matching Logic: Confirm match and trigger "Identity Reveal"
-        [HttpPost]
-        public async Task<IActionResult> ConfirmMatch(int id)
-        {
-            var proposal = await _context.ProjectProposals.FindAsync(id);
-            if (proposal != null)
-            {
-                // In a real system, use the logged-in supervisor's ID
-                proposal.SupervisorId = "Supervisor_Anton_J";
-                proposal.Status = "Matched";
-
-                await _context.SaveChangesAsync();
-                [cite_start]// The identity reveal happens now because SupervisorId is no longer null 
-            }
-            return RedirectToAction(nameof(Index));
-        }
-    }
-}
+    } // This bracket closes the class
+} // This bracket closes the namespace
