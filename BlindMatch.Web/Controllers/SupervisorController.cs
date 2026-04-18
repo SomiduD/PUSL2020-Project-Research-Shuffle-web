@@ -1,20 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization; // Added for Security
+using Microsoft.AspNetCore.Identity;      // Added to get the real User
 using BlindMatch.Web.Data;
 using BlindMatch.Web.Models;
 
 namespace BlindMatch.Web.Controllers
 {
+    // This completely locks down the page. If you aren't logged in, it forces you to the Login screen!
+    [Authorize]
     public class SupervisorController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager; // The tool to read user data
 
-        public SupervisorController(ApplicationDbContext context)
+        // We inject the UserManager into the constructor alongside the database
+        public SupervisorController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // Blind Review Dashboard: Browse proposals without seeing student details
         public async Task<IActionResult> Index()
         {
             var availableProposals = await _context.ProjectProposals
@@ -24,20 +30,20 @@ namespace BlindMatch.Web.Controllers
             return View(availableProposals);
         }
 
-        // Matching Logic: Confirm match and trigger "Identity Reveal"
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmMatch(int id)
         {
             var proposal = await _context.ProjectProposals.FindAsync(id);
+            if (proposal == null) return NotFound();
 
-            if (proposal == null)
-            {
-                return NotFound();
-            }
+            // 1. Get the actual user who is currently logged in and clicking the button
+            var currentUser = await _userManager.GetUserAsync(User);
 
-            // placeholder for current supervisor
-            proposal.SupervisorId = "Supervisor_Anton_J";
+            if (currentUser == null) return Challenge(); // Failsafe if session expired
+
+            // 2. Replace the hardcoded fake name with the real user's unique ID!
+            proposal.SupervisorId = currentUser.Id;
             proposal.Status = "Matched";
 
             _context.Update(proposal);

@@ -1,0 +1,39 @@
+﻿@model BlindMatch.Web.Models.ProjectProposal
+
+@{
+    ViewData["Title"] = "Submit Proposal";
+}
+
+<div class="container mt-4">
+    <h2>Submit Project Proposal</h2>
+    <p class="text-muted">Your identity will remain hidden from supervisors until a match is confirmed.</p>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Create">
+                <div class="form-group mb-3">
+                    <label asp-for="Title" class="control-label fw-bold"></label>
+                    <input asp-for="Title" class="form-control" placeholder="e.g., AI Traffic Management System" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Abstract" class="control-label fw-bold"></label>
+                    <textarea asp-for="Abstract" class="form-control" rows="5" placeholder="Briefly describe the problem, objectives, and your proposed solution..."></textarea>
+                    <span asp-validation-for="Abstract" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="TechnicalStack" class="control-label fw-bold">Technical Stack</label>
+                    <input asp-for="TechnicalStack" class="form-control" placeholder="e.g., C#, ASP.NET Core, SQL Server" />
+                    <span asp-validation-for="TechnicalStack" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success btn-lg">Submit Proposal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
