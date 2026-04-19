@@ -9,10 +9,22 @@
     <p class="text-muted">Review proposals blindly. Student identities are hidden until a match is confirmed.</p>
     <hr />
 
+    <form asp-action="Index" method="get" class="mb-4 d-flex gap-3 align-items-center bg-light p-3 rounded shadow-sm">
+        <label class="fw-bold mb-0">Filter by Domain:</label>
+        <select name="searchArea" class="form-select w-auto">
+            <option value="">All Research Areas</option>
+            <option value="Machine Learning" selected="@(ViewBag.CurrentFilter == "Machine Learning" ? "selected" : null)">Machine Learning</option>
+            <option value="Cloud Computing" selected="@(ViewBag.CurrentFilter == "Cloud Computing" ? "selected" : null)">Cloud Computing</option>
+            <option value="Cybersecurity" selected="@(ViewBag.CurrentFilter == "Cybersecurity" ? "selected" : null)">Cybersecurity</option>
+            <option value="Web Development" selected="@(ViewBag.CurrentFilter == "Web Development" ? "selected" : null)">Web Development</option>
+        </select>
+        <button type="submit" class="btn btn-secondary">Apply Filter</button>
+    </form>
+
     @if (!Model.Any())
     {
-        <div class="alert alert-info">
-            There are currently no unmatched proposals available.
+        <div class="alert alert-info shadow-sm">
+            There are currently no unmatched proposals available matching your criteria.
         </div>
     }
     else
@@ -21,21 +33,30 @@
             @foreach (var item in Model)
             {
                 <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm h-100">
+                    <div class="card shadow-sm h-100 border-0">
                         <div class="card-header bg-dark text-white">
                             <h5 class="mb-0">@item.Title</h5>
                         </div>
                         <div class="card-body">
-                            <h6 class="text-muted">Identity: <span class="badge bg-secondary">Hidden (Blind Match)</span></h6>
-                            <p class="mt-3"><strong>Abstract:</strong></p>
-                            <p class="card-text">@item.Abstract</p>
+                            <h6 class="text-muted mb-3">Identity: <span class="badge bg-secondary">Hidden (Blind Match)</span></h6>
 
-                            <p><strong>Tech Stack:</strong> <span class="badge bg-info text-dark">@item.TechnicalStack</span></p>
+                            <p class="mb-2"><strong>Domain:</strong> <span class="text-primary fw-bold">@item.ResearchArea</span></p>
+
+                            <p class="mt-3 mb-1"><strong>Abstract:</strong></p>
+                            <p class="card-text text-muted small">@item.Abstract</p>
+
+                            <p class="mt-3"><strong>Tech Stack:</strong> <span class="badge bg-info text-dark">@item.TechnicalStack</span></p>
                         </div>
-                        <div class="card-footer bg-white border-top-0">
-                            <form asp-action="ConfirmMatch" asp-route-id="@item.Id" method="post">
-                                <button type="submit" class="btn btn-primary w-100">Confirm Match & Reveal Student</button>
+                        <div class="card-footer bg-white border-top-0 pt-3 pb-3">
+
+                            <form asp-action="ConfirmMatch" method="post">
+                                <input type="hidden" name="proposalId" value="@item.Id" />
+                                <button type="submit" class="btn btn-success w-100 fw-bold"
+                                        onclick="return confirm('WARNING: Are you sure you want to officially claim this project? This action cannot be undone and will permanently reveal both identities.');">
+                                    Confirm Match & Reveal Student
+                                </button>
                             </form>
+
                         </div>
                     </div>
                 </div>

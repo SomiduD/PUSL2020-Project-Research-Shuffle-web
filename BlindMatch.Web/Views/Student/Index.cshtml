@@ -32,6 +32,7 @@
                         <th>Submitted On</th>
                         <th class="text-center">Current Status</th>
                         <th>Supervisor Contact</th>
+                        <th class="text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,6 +75,21 @@
                                     <span class="text-muted small fst-italic">Hidden until matched</span>
                                 }
                             </td>
+
+                            <td class="align-middle">
+                                @if (item.Status == "Pending")
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary mb-1 w-100">Edit</a>
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Withdraw this proposal entirely? This action cannot be undone.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger w-100">Withdraw</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small text-center d-block">Locked</span>
+                                }
+                            </td>
+
                         </tr>
                     }
                 </tbody>
@@ -91,8 +107,12 @@
     <script>
         $(document).ready(function () {
             $('#proposalsTable').DataTable({
-                // This automatically sorts the table by the "Submitted On" column (Index 2)
-                "order": [[2, "desc"]]
+                // Sorts by the "Submitted On" column (Index 2)
+                "order": [[2, "desc"]],
+                // Disables the sorting arrows on the new "Actions" column (Index 5)
+                "columnDefs": [
+                    { "orderable": false, "targets": 5 }
+                ]
             });
         });
     </script>

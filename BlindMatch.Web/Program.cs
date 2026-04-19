@@ -4,22 +4,23 @@ using BlindMatch.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. DATABASE SETUP: Tell the app to use SQL Server and grab the connection string
+// 1. DATABASE SETUP
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// 2. SECURITY SETUP: Enable Identity and the "Supervisor" / "Student" Roles
+// 2. SECURITY SETUP (Roles Activated!)
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// 3. RUN THE INITIALIZER (This fixes your database!)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -36,20 +37,17 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseRouting();
+app.UseStaticFiles(); // Bulletproof static file loading
 
-// 3. MIDDLEWARE PIPELINE: Authentication (Who are you?) MUST come before Authorization (What can you do?)
+// Authentication MUST come before Authorization
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
-
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// 4. MAP IDENTITY PAGES: Required for the Login/Register screens later
 app.MapRazorPages();
 
 app.Run();

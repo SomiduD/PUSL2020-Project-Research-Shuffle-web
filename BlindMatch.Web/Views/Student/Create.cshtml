@@ -33,6 +33,16 @@
                 <div class="form-group">
                     <button type="submit" class="btn btn-success btn-lg">Submit Proposal</button>
                 </div>
+                <div class="mb-3">
+                    <label asp-for="ResearchArea" class="form-label">Research Area</label>
+                    <select asp-for="ResearchArea" class="form-select" required>
+                        <option value="">Select an area...</option>
+                        <option value="Machine Learning">Machine Learning</option>
+                        <option value="Cloud Computing">Cloud Computing</option>
+                        <option value="Cybersecurity">Cybersecurity</option>
+                        <option value="Web Development">Web Development</option>
+                    </select>
+                </div>
             </form>
         </div>
     </div>

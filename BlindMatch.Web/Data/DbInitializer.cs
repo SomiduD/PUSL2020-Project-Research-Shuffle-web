@@ -6,8 +6,10 @@ namespace BlindMatch.Web.Data
     {
         public static async Task InitializeAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            // 1. Create the Roles if they don't exist
-            string[] roleNames = { "Supervisor", "Student" };
+            // 1. Define the system roles
+            string[] roleNames = { "ModuleLeader", "Supervisor", "Student" };
+
+            // 2. Automatically create the roles if they are missing
             foreach (var roleName in roleNames)
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
@@ -16,20 +18,17 @@ namespace BlindMatch.Web.Data
                 }
             }
 
-            // 2. Create a default test Supervisor
-            if (await userManager.FindByEmailAsync("supervisor@test.com") == null)
-            {
-                var supervisor = new IdentityUser { UserName = "supervisor@test.com", Email = "supervisor@test.com", EmailConfirmed = true };
-                await userManager.CreateAsync(supervisor, "Password123!");
-                await userManager.AddToRoleAsync(supervisor, "Supervisor");
-            }
+            // 3. Automatically grant God-Mode to your admin account!
+            var adminEmail = "admin@blindmatch.com"; // Make sure this matches the account you created!
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
-            // 3. Create a default test Student
-            if (await userManager.FindByEmailAsync("student@test.com") == null)
+            if (adminUser != null)
             {
-                var student = new IdentityUser { UserName = "student@test.com", Email = "student@test.com", EmailConfirmed = true };
-                await userManager.CreateAsync(student, "Password123!");
-                await userManager.AddToRoleAsync(student, "Student");
+                // If the user exists but doesn't have the badge, give it to them
+                if (!await userManager.IsInRoleAsync(adminUser, "ModuleLeader"))
+                {
+                    await userManager.AddToRoleAsync(adminUser, "ModuleLeader");
+                }
             }
         }
     }

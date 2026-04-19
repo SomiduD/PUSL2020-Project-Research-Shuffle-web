@@ -1,0 +1,52 @@
+﻿@model BlindMatch.Web.Models.ProjectProposal
+
+@{
+    ViewData["Title"] = "Edit Proposal";
+}
+
+<div class="container mt-4">
+    <h2>Edit Project Proposal</h2>
+    <p class="text-muted">You can only edit this proposal while it remains in "Pending" status.</p>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Edit" method="post">
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-bold">Title</label>
+                    <input asp-for="Title" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Abstract" class="form-label fw-bold">Abstract</label>
+                    <textarea asp-for="Abstract" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TechnicalStack" class="form-label fw-bold">Technical Stack</label>
+                    <input asp-for="TechnicalStack" class="form-control" required />
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ResearchArea" class="form-label fw-bold">Research Area</label>
+                    <select asp-for="ResearchArea" class="form-select" required>
+                        <option value="">Select an area...</option>
+                        <option value="Machine Learning">Machine Learning</option>
+                        <option value="Cloud Computing">Cloud Computing</option>
+                        <option value="Cybersecurity">Cybersecurity</option>
+                        <option value="Web Development">Web Development</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary btn-lg px-4 shadow-sm">Save Changes</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-lg ms-2">Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

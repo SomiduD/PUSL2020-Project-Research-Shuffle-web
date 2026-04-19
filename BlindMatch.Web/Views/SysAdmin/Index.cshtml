@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary fw-bold">System Administrator - Users</h2>
+        <a asp-action="CreateUser" class="btn btn-success">➕ Create New User</a>
+    </div>
+    <hr />
+
+    <table class="table table-hover table-bordered shadow-sm align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Email / Username</th>
+                <th>Assigned Role</th>
+                <th class="text-center">Admin Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td class="fw-bold">@user.Email</td>
+                    <td>
+                        @{
+                            var role = ((Dictionary<string, string>)ViewBag.UserRoles)[user.Id];
+                        }
+                        @if (role == "ModuleLeader")
+                        {
+                            <span class="badge bg-danger fs-6">Admin</span>
+                        }
+                        else if (role == "Supervisor")
+                        {
+
+                            <span class="badge bg-success fs-6">Supervisor</span>
+                        }
+                        else if (role == "Student")
+                        {
+
+                            <span class="badge bg-primary fs-6">Student</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge bg-secondary fs-6">@role</span>
+                        }
+                    </td>
+
+                    <td class="text-center">
+                        @if (role == "Student")
+                        {
+                            <form asp-action="PromoteToSupervisor" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Promote this student to a Supervisor?');">
+                                <button type="submit" class="btn btn-sm btn-outline-success w-100 fw-bold">⬆️ Upgrade to Supervisor</button>
+                            </form>
+                        }
+                        else if (role == "Supervisor")
+                        {
+                            <form asp-action="DemoteToStudent" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Demote this Supervisor back to a Student?');">
+                                <button type="submit" class="btn btn-sm btn-outline-warning w-100 fw-bold">⬇️ Revert to Student</button>
+                            </form>
+                        }
+                        else if (role == "ModuleLeader")
+                        {
+                            <span class="text-muted small fst-italic">System Protected</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

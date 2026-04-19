@@ -1,0 +1,40 @@
+﻿@model IEnumerable<BlindMatch.Web.Models.ProjectProposal>
+@{
+    ViewData["Title"] = "Allocation Oversight";
+}
+
+<h2 class="text-danger fw-bold">Admin Oversight Dashboard</h2>
+<p>Master view of all allocations. Anonymity constraints are bypassed here.</p>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Project Title</th>
+            <th>Area</th>
+            <th>Student ID</th>
+            <th>Supervisor ID</th>
+            <th>Status</th>
+            <th>Admin Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.ResearchArea</td>
+                <td class="font-monospace text-muted">@item.StudentId</td>
+                <td class="font-monospace text-muted">@(item.SupervisorId ?? "UNASSIGNED")</td>
+                <td>@item.Status</td>
+                <td>
+                    @if (item.Status == "Matched")
+                    {
+                        <form asp-action="Unmatch" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Forcefully break this match?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Force Unmatch</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

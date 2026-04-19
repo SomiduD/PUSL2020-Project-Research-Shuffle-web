@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Create User Account";
+}
+
+<div class="container mt-4">
+    <h2>Provision New User Account</h2>
+    <p class="text-muted">Create official accounts for university staff and students.</p>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="CreateUser" method="post" class="card p-4 shadow-sm">
+
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Email Address</label>
+                    <input type="email" name="email" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Temporary Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Must contain uppercase, number & symbol" required />
+                    <small class="text-muted">Example: TempPass123!</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">System Role</label>
+                    <select name="role" class="form-select" required>
+                        <option value="Student">Student (Submit Proposals)</option>
+                        <option value="Supervisor">Supervisor (Review & Claim)</option>
+                        <option value="ModuleLeader">Module Leader (Admin Access)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Create Account</button>
+            </form>
+        </div>
+    </div>
+</div>

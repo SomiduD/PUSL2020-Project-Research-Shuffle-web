@@ -21,5 +21,7 @@ namespace BlindMatch.Web.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? MatchedAt { get; set; }
         public string Status { get; set; } = "Pending";
+
+        public string? ResearchArea { get; set; }
     }
 }
