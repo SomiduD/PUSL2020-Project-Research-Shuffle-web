@@ -18,6 +18,8 @@ namespace BlindMatch.Web.Models
 
         public string? SupervisorId { get; set; }
         public string? StudentId { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? MatchedAt { get; set; }
         public string Status { get; set; } = "Pending";
     }
 }

@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<BlindMatch.Web.Models.ProjectProposal>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
 
 @{
     ViewData["Title"] = "My Proposals";
@@ -6,7 +8,7 @@
 
 <div class="container mt-4">
     <h2>My Submitted Proposals</h2>
-    <p class="text-muted">Track the status of your submissions. Remember, supervisors review these blindly!</p>
+    <p class="text-muted">Track the status of your submissions. Once matched, your supervisor's details will appear here.</p>
     <hr />
 
     <div class="mb-3">
@@ -22,21 +24,28 @@
     else
     {
         <div class="table-responsive">
-            <table class="table table-hover table-bordered shadow-sm">
+            <table id="proposalsTable" class="table table-hover table-bordered shadow-sm align-middle">
                 <thead class="table-dark">
                     <tr>
                         <th>Project Title</th>
                         <th>Technical Stack</th>
-                        <th>Current Status</th>
+                        <th>Submitted On</th>
+                        <th class="text-center">Current Status</th>
+                        <th>Supervisor Contact</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td class="align-middle fw-bold">@item.Title</td>
-                            <td class="align-middle">@item.TechnicalStack</td>
-                            <td class="align-middle text-center">
+                            <td class="fw-bold">@item.Title</td>
+                            <td>@item.TechnicalStack</td>
+
+                            <td>
+                                <small class="text-muted">@item.CreatedAt.ToString("MMM dd, yyyy - hh:mm tt")</small>
+                            </td>
+
+                            <td class="text-center">
                                 @if (item.Status == "Pending")
                                 {
                                     <span class="badge bg-warning text-dark fs-6 w-100">Pending Review</span>
@@ -46,6 +55,25 @@
                                     <span class="badge bg-success fs-6 w-100">Match Confirmed!</span>
                                 }
                             </td>
+                            <td>
+                                @if (item.Status == "Matched" && item.SupervisorId != null)
+                                {
+                                    var supervisor = await UserManager.FindByIdAsync(item.SupervisorId);
+                                    var supervisorContact = supervisor?.Email ?? "Unknown";
+
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=Supervisor&background=198754&color=fff&rounded=true" alt="Supervisor Photo" width="40" height="40" class="me-2">
+                                        <div>
+                                            <small class="fw-bold text-success">Assigned</small><br />
+                                            <a href="mailto:@supervisorContact" class="text-decoration-none small">@supervisorContact</a>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small fst-italic">Hidden until matched</span>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -53,3 +81,19 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#proposalsTable').DataTable({
+                // This automatically sorts the table by the "Submitted On" column (Index 2)
+                "order": [[2, "desc"]]
+            });
+        });
+    </script>
+}

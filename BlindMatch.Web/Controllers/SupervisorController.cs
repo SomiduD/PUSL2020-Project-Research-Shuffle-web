@@ -44,9 +44,12 @@ namespace BlindMatch.Web.Controllers
 
             if (currentUser == null) return Challenge(); // Failsafe if session expired
 
-            // Replace the hardcoded fake name with the real user's unique ID!
+            
             proposal.SupervisorId = currentUser.Id;
             proposal.Status = "Matched";
+
+            
+            proposal.MatchedAt = DateTime.Now;
 
             _context.Update(proposal);
             await _context.SaveChangesAsync();

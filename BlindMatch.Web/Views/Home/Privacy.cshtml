@@ -1,6 +1,44 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-4">
+        <h1 class="display-5 fw-bold text-primary">Privacy & Data Policy</h1>
+        <p class="lead text-muted">BlindMatch System - Maintained by Group AU</p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-5">
+            <h4 class="fw-bold"><i class="bi bi-shield-lock text-primary"></i> 1. The Anonymity Guarantee</h4>
+            <p>
+                The core philosophy of the BlindMatch system is to eliminate bias during project allocation.
+                We guarantee that all student identities (including names, emails, and profile data) are strictly masked from supervisors during the initial proposal phase.
+            </p>
+
+            <hr class="my-4" />
+
+            <h4 class="fw-bold"><i class="bi bi-eye text-primary"></i> 2. Data Reveal Protocol</h4>
+            <p>
+                Student personal data is only decrypted and revealed to a supervisor <strong>after</strong> a permanent match is confirmed in the database.
+                Once a match is made, both the student and the supervisor will receive mutual access to each other's university contact details to facilitate project commencement.
+            </p>
+
+            <hr class="my-4" />
+
+            <h4 class="fw-bold"><i class="bi bi-server text-primary"></i> 3. Data Storage & Security</h4>
+            <p>
+                All authentication is handled securely via ASP.NET Core Identity. Passwords are cryptographically hashed using PBKDF2 before being stored in the SQL Server database. Session cookies are strictly encrypted and bound to the user's specific role (Student or Supervisor).
+            </p>
+
+            <hr class="my-4" />
+
+            <div class="bg-light p-3 rounded text-center mt-4">
+                <small class="text-muted">
+                    This system was developed by <strong>Ransinghe Solutions</strong> and Group AU for academic evaluation purposes at NSBM Green University. <br />
+                    &copy; 2026 BlindMatch Web Allocation System.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
