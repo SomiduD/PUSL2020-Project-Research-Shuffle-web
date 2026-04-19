@@ -1,0 +1,55 @@
+﻿@model IEnumerable<BlindMatch.Web.Models.ProjectProposal>
+
+@{
+    ViewData["Title"] = "My Proposals";
+}
+
+<div class="container mt-4">
+    <h2>My Submitted Proposals</h2>
+    <p class="text-muted">Track the status of your submissions. Remember, supervisors review these blindly!</p>
+    <hr />
+
+    <div class="mb-3">
+        <a asp-action="Create" class="btn btn-primary">Submit New Proposal</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You haven't submitted any project proposals yet.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Project Title</th>
+                        <th>Technical Stack</th>
+                        <th>Current Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="align-middle fw-bold">@item.Title</td>
+                            <td class="align-middle">@item.TechnicalStack</td>
+                            <td class="align-middle text-center">
+                                @if (item.Status == "Pending")
+                                {
+                                    <span class="badge bg-warning text-dark fs-6 w-100">Pending Review</span>
+                                }
+                                else if (item.Status == "Matched")
+                                {
+                                    <span class="badge bg-success fs-6 w-100">Match Confirmed!</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -8,7 +8,7 @@ using BlindMatch.Web.Models;
 namespace BlindMatch.Web.Controllers
 {
     // This completely locks down the page. If you aren't logged in, it forces you to the Login screen!
-    [Authorize]
+    [Authorize(Roles = "Supervisor")]
     public class SupervisorController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,6 +21,7 @@ namespace BlindMatch.Web.Controllers
             _userManager = userManager;
         }
 
+        // 1. Dashboard: Shows only unassigned proposals
         public async Task<IActionResult> Index()
         {
             var availableProposals = await _context.ProjectProposals
@@ -30,6 +31,7 @@ namespace BlindMatch.Web.Controllers
             return View(availableProposals);
         }
 
+        // 2. Match Logic: Assigns the logged-in supervisor's ID to the proposal
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmMatch(int id)
@@ -37,12 +39,12 @@ namespace BlindMatch.Web.Controllers
             var proposal = await _context.ProjectProposals.FindAsync(id);
             if (proposal == null) return NotFound();
 
-            // 1. Get the actual user who is currently logged in and clicking the button
+            // Get the actual user who is currently logged in and clicking the button
             var currentUser = await _userManager.GetUserAsync(User);
 
             if (currentUser == null) return Challenge(); // Failsafe if session expired
 
-            // 2. Replace the hardcoded fake name with the real user's unique ID!
+            // Replace the hardcoded fake name with the real user's unique ID!
             proposal.SupervisorId = currentUser.Id;
             proposal.Status = "Matched";
 
@@ -50,6 +52,21 @@ namespace BlindMatch.Web.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        // 3. NEW: The Identity Reveal - Shows only the projects this specific supervisor claimed
+        public async Task<IActionResult> MyMatches()
+        {
+            // Get the current logged-in supervisor
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return Challenge();
+
+            // Fetch only the proposals that match their specific Identity ID
+            var myMatches = await _context.ProjectProposals
+                .Where(p => p.SupervisorId == currentUser.Id)
+                .ToListAsync();
+
+            return View(myMatches);
         }
     }
 }

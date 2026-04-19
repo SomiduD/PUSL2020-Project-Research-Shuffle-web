@@ -24,13 +24,25 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="Student" asp-action="Create">Submit Proposal</a>
-                        </li>
+                        @if (User.IsInRole("Student"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-primary fw-bold" asp-area="" asp-controller="Student" asp-action="Index">My Proposals Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="Create">Submit New Proposal</a>
+                            </li>
+                        }
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="Supervisor" asp-action="Index">Supervisor Dashboard</a>
-                        </li>
+                        @if (User.IsInRole("Supervisor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-danger fw-bold" asp-area="" asp-controller="Supervisor" asp-action="Index">Supervisor Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-success fw-bold" asp-area="" asp-controller="Supervisor" asp-action="MyMatches">My Matches</a>
+                            </li>
+                        }
 
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>

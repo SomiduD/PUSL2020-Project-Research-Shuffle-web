@@ -1,45 +1,63 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using BlindMatch.Web.Data;
 using BlindMatch.Web.Models;
 
 namespace BlindMatch.Web.Controllers
 {
-    // [Authorize(Roles = "Student")] // Keep this commented out until we seed the user roles!
+    // Locks down the entire student section
+    [Authorize(Roles = "Student")]
     public class StudentController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public StudentController(ApplicationDbContext context)
+        public StudentController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // 1. GET: Shows the blank HTML form to the user
+        // 1. Dashboard: Shows only the proposals submitted by this logged-in student
+        public async Task<IActionResult> Index()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return Challenge();
+
+            var myProposals = await _context.ProjectProposals
+                .Where(p => p.StudentId == currentUser.Id)
+                .ToListAsync();
+
+            return View(myProposals);
+        }
+
+        // 2. GET: Shows the blank submission form
         public IActionResult Create()
         {
             return View();
         }
 
-        // 2. POST: Catches the form data when the user clicks "Submit"
+        // 3. POST: Saves the proposal and attaches the Student's ID
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProjectProposal proposal)
         {
             if (ModelState.IsValid)
             {
-                // Force default values to ensure the Anonymity Constraint
+                var currentUser = await _userManager.GetUserAsync(User);
+
                 proposal.Status = "Pending";
                 proposal.SupervisorId = null;
+                proposal.StudentId = currentUser?.Id; // Automatically link the student!
 
-                // Save to the database
                 _context.Add(proposal);
                 await _context.SaveChangesAsync();
 
-                // Redirect back to the home page (or a success page)
-                return RedirectToAction("Index", "Home");
+                // Redirect to their new dashboard after submitting
+                return RedirectToAction(nameof(Index));
             }
-
-            // If the form has errors, return the form so they can fix it
             return View(proposal);
         }
     }

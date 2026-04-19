@@ -17,6 +17,7 @@ namespace BlindMatch.Web.Models
         public string TechnicalStack { get; set; } = string.Empty;
 
         public string? SupervisorId { get; set; }
+        public string? StudentId { get; set; }
         public string Status { get; set; } = "Pending";
     }
 }
